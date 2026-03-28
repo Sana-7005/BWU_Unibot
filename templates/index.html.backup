@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BWU UniBot</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Holiday Modal Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  </head>
+
+  <body>
+    <!-- Floating Chat Button -->
+    <button
+      class="chat-float-btn"
+      id="chatFloatBtn"
+      onclick="openChat()"
+      aria-label="Open chat"
+    >
+      <svg
+        class="chat-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+      <!-- Welcome Screen -->
+      <div class="welcome-screen" id="welcomeScreen">
+        <button
+          class="animated-close-btn"
+          onclick="closeChat()"
+          aria-label="Close chat"
+        >
+          ×
+        </button>
+        <div class="welcome-content">
+          <div class="university-logo">
+            <img
+              src="/logo/Brainware_University.jpg"
+              alt="Brainware University Logo"
+            />
+          </div>
+          <h1 class="welcome-title">Welcome to BWU UniBot</h1>
+          <p class="welcome-subtitle">Your 24/7 University Assistant</p>
+          <div class="welcome-features">
+            <div
+              class="feature-item"
+              onclick="openAnnouncementsModal()"
+              style="cursor: pointer"
+            >
+              <span class="feature-icon">📢</span>
+              <span class="feature-text">See Latest Notice</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📅</span>
+              <span class="feature-text" id="welcomeUpcomingHoliday"
+                >See Upcoming Holiday</span
+              >
+            </div>
+          </div>
+          <div
+            id="welcomeUpcomingHolidayCard"
+            style="display: none; margin-top: 12px"
+          ></div>
+          <button class="lets-start-btn" onclick="startChatting()">
+            Start Chatting
+            <svg class="btn-arrow" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fill-rule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat Interface -->
+      <div class="chat-interface" id="chatInterface">
+        <!-- Header -->
+        <div class="chat-header">
+          <div class="header-left">
+            <div class="header-logo">
+              <img src="/logo/Brainware_University.jpg" alt="BWU Logo" />
+            </div>
+            <div class="header-info">
+              <h3>BWU UniBot</h3>
+              <p class="status-indicator">
+                <span class="status-dot"></span>
+                Online
+              </p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button
+              class="header-btn"
+              id="themeToggle"
+              onclick="toggleTheme()"
+              aria-label="Toggle theme"
+              title="Toggle dark mode"
+            >
+              <svg
+                class="theme-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            </button>
+            <button
+              class="header-btn close-btn"
+              onclick="closeChat()"
+              aria-label="Close chat"
+              title="Close"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button
+            class="quick-action-btn"
+            data-category="Academic"
+            onclick="openAcademicsModal()"
+          >
+            <img
+              src="/sidebar/Academic svg.svg"
+              alt="Academic"
+              class="action-icon-svg"
+            />
+            <span class="action-text">Academic</span>
+          </button>
+          <button
+            class="quick-action-btn"
+            data-category="Faculty"
+            onclick="window.open('/faculty', '_blank')"
+          >
+            <img
+              src="/sidebar/Faculty svg.svg"
+              alt="Faculty"
+              class="action-icon-svg"
+            />
+            <span class="action-text">Faculty</span>
+          </button>
+          <button
+            class="quick-action-btn"
+            data-category="Examination"
+            onclick="selectCategory('Examination')"
+          >
+            <img
+              src="/sidebar/exam svg.svg"
+              alt="Examination"
+              class="action-icon-svg"
+            />
+            <span class="action-text">Exams</span>
+          </button>
+          <button
+            class="quick-action-btn"
+            data-category="Holiday"
+            onclick="selectCategory('Holiday')"
+          >
+            <img
+              src="/sidebar/Academic svg.svg"
+              alt="Holiday"
+              class="action-icon-svg"
+            />
+            <span class="action-text">Holiday</span>
+          </button>
+        </div>
+        <!-- Academics Modal -->
+        <div
+          class="academics-modal"
+          id="academicsModal"
+          style="
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(0px);
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            transition: all 0.5s ease;
+          "
+        >
+          <div
+            class="academics-modal-content"
+            style="
+              background: linear-gradient(160deg, #e6f4ff, #bfe4ff);
+              border-radius: 26px;
+              max-width: 520px;
+              width: 100%;
+              max-height: 90vh;
+              overflow-y: auto;
+              padding: 34px;
+              box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+              position: relative;
+              transform: scale(0.7) translateY(20px);
+              opacity: 0;
+              transition: all 0.5s cubic-bezier(0.54, 1.56, 0.64, 1);
+            "
+          >
+            
+            <button
+              class="close-modal"
+              onclick="closeAcademicsModal()"
+              aria-label="Close"
+              style="position: absolute; right: 18px; top: 15px; z-index: 10"
+            >
+              ×
+            </button>
+
+            <div class="academics-glass-card" id="academicsMainCards">
+              <h1 class="academics-title">Academic</h1>
+              <p class="academics-subtitle">
+                Quick access to coursework & exam info
+              </p>
+
+              <div class="academics-grid">
+                <!-- SYLLABUS -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="showAcademicsSection('syllabus')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 4h10v14H6z" stroke="#000" stroke-width="1.2"></path>
+                      <path d="M6 8h10" stroke="#000" stroke-width="1.2"></path>
+                      <path d="M4 6v12a2 2 0 0 0 2 2h12" stroke="#000" stroke-width="1.2"></path>
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Syllabus</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+
+                <!-- SUBJECT -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="showAcademicsSection('subjects')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <rect
+                        x="3"
+                        y="4"
+                        width="18"
+                        height="5"
+                        rx="1"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                      <rect
+                        x="3"
+                        y="11"
+                        width="18"
+                        height="5"
+                        rx="1"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Subject</span>
+                    <span class="academics-small">Select subject</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+
+                <!-- EXAM DATE -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="showAcademicsSection('exam')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="16"
+                        rx="2"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                      <path
+                        d="M16 3v4M8 3v4"
+                        stroke="#000"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M7 11h6"
+                        stroke="#000"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Exam Date</span>
+                    <span class="academics-small">Check schedule</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+
+                <!-- NOTICE -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="showAcademicsSection('notice')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                      <path
+                        d="M14 2v6h6M16 13H8M16 17H8M10 9H8"
+                        stroke="#000"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Notice</span>
+                    <span class="academics-small">View notices</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+
+                <!-- SCHOLARSHIP -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="window.open('/scholarship', '_blank')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 -960 960 960" fill="#000">
+                      <path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/>
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Scholarship</span>
+                    <span class="academics-small">View scholarships</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+
+                <!-- OTHER -->
+                <button
+                  class="academics-btn-glass"
+                  onclick="showAcademicsSection('grading')"
+                >
+                  <span class="academics-ico">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <circle
+                        cx="5"
+                        cy="12"
+                        r="1.6"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="1.6"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                      <circle
+                        cx="19"
+                        cy="12"
+                        r="1.6"
+                        stroke="#000"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </span>
+                  <span class="academics-text">
+                    <span class="academics-name">Other</span>
+                    <span class="academics-small">Grading & details</span>
+                  </span>
+                  <span class="academics-ripple"></span>
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="academicsSectionContent"
+              style="
+                margin-top: 24px;
+                font-size: 15px;
+                color: #000;
+                position: relative;
+                z-index: 1;
+              "
+            ></div>
+          </div>
+        </div>
+        
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatlog">
+          <div class="message bot">
+            <div class="message-avatar">
+              <img src="/logo/Brainware_University.jpg" alt="Bot" />
+            </div>
+            <div class="message-bubble">
+              <div class="message-content">
+                Hi! I'm BWU UniBot, your university assistant. 👋<br />
+                Use the quick actions above to explore categories, or type your
+                questions below. How can I help you today?
+              </div>
+              <div class="message-time"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div
+          class="typing-container"
+          id="typingContainer"
+          style="display: none"
+        >
+          <div class="message bot">
+            <div class="message-avatar">
+              <img src="/logo/Brainware_University.jpg" alt="Bot" />
+            </div>
+            <div class="message-bubble typing">
+              <div class="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <input
+              type="text"
+              class="chat-input"
+              id="userInput"
+              placeholder="Type your message..."
+              onkeypress="handleKeyPress(event)"
+              autocomplete="off"
+            />
+            <button
+              onclick="sendMessage()"
+              id="sendBtn"
+              class="send-btn"
+              aria-label="Send message"
+            >
+              <svg class="send-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Faculty Search Modal -->
+    <div class="faculty-modal" id="facultyModal">
+      <div class="faculty-modal-content">
+        <div class="faculty-modal-header">
+          <h2>Faculty Directory</h2>
+          <button
+            class="animated-close-btn"
+            onclick="closeFacultyModal()"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div class="faculty-search-box">
+          <input
+            type="text"
+            id="facultySearchInput"
+            class="faculty-search-input"
+            placeholder="Search by name, position, or research area..."
+            oninput="searchFaculty()"
+          />
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </div>
+        <div class="faculty-results" id="facultyResults">
+          <div class="faculty-loading">Loading faculty data...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Schedule Modal -->
+    <div class="exam-modal" id="examModal" style="display: none">
+      <div class="exam-modal-shell">
+        <div class="exam-modal-header">
+          <div class="exam-brand">
+            <div class="exam-logo" aria-hidden>📅</div>
+            <div class="exam-title-wrapper">
+              <h2>Academic Calendar 2025-26</h2>
+              <p>View exam dates, class tests, and important academic events</p>
+            </div>
+          </div>
+          <div class="exam-header-actions">
+            <button
+              class="animated-close-btn"
+              onclick="closeExamModal()"
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div class="exam-content-wrapper">
+          <section class="exam-panel" aria-labelledby="sem-title">
+            <div class="exam-date-sheet-card" style="background:#f8fafc;border-radius:18px;box-shadow:0 4px 24px rgba(25,118,210,0.07);padding:32px 24px 28px 24px;margin-bottom:32px;">
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+                <div style="font-size:32px;background:linear-gradient(135deg,#1976d2,#42a5f5);color:#fff;border-radius:10px;width:56px;height:56px;display:grid;place-items:center;box-shadow:0 4px 16px rgba(25,118,210,0.18);">🗓️</div>
+                <div>
+                  <h3 style="font-size:22px;font-weight:800;color:#1976d2;margin:0;letter-spacing:0.5px;">Exam Date Sheet</h3>
+                  <div style="font-size:15px;color:#4b5563;margin-top:2px;">Academic Calendar & Important Exam Events</div>
+                </div>
+              </div>
+              <hr style="border:none;border-top:1.5px solid #e3e8ee;margin:18px 0 24px 0;">
+              <div class="exam-grid-cards" role="list" style="margin-bottom:18px;">
+                <button class="exam-select-card" role="listitem" aria-pressed="false" data-semester="odd" tabindex="0" onclick="selectSemester('odd')">
+                  <div class="exam-card-icon" aria-hidden>🎓</div>
+                  <div class="exam-card-meta">
+                    <h4>Odd Semester</h4>
+                    <p>1st, 3rd, 5th, 7th, 9th — July to December</p>
+                  </div>
+                </button>
+                <button class="exam-select-card" role="listitem" aria-pressed="false" data-semester="even" tabindex="0" onclick="selectSemester('even')">
+                  <div class="exam-card-icon" aria-hidden>📚</div>
+                  <div class="exam-card-meta">
+                    <h4>Even Semester</h4>
+                    <p>2nd, 4th, 6th, 8th, 10th — January to May</p>
+                  </div>
+                </button>
+              </div>
+              <div style="margin-top: 18px; text-align: center;">
+                <a href="/static/Exam/Academic%20Calendar.pdf" target="_blank" rel="noopener" class="btn btn-primary" style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 14px 32px;
+                  background: linear-gradient(90deg,#1976d2,#42a5f5);
+                  color: #fff;
+                  border-radius: 8px;
+                  font-size: 17px;
+                  font-weight: 700;
+                  text-decoration: none;
+                  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.13);
+                  border: none;
+                  transition: background 0.2s;
+                  margin-bottom: 2px;
+                "
+                  onmouseover="this.style.background='linear-gradient(90deg,#125ea2,#1976d2)'"
+                  onmouseout="this.style.background='linear-gradient(90deg,#1976d2,#42a5f5)'"
+                >
+                  <span style="font-size:22px;">📄</span> View Full Academic Calendar (PDF)
+                </a>
+              </div>
+            </div>
+            <div id="examEventsContainer" style="margin-top: 0; display: none;">
+              <div class="exam-section-label" style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:18px;letter-spacing:0.2px;">Important Dates & Events</div>
+              <div id="examEventsList" style="max-height: 400px; overflow-y: auto; padding-right: 8px; margin-top: 0; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(25,118,210,0.04); padding: 18px 12px 8px 12px; border: 1.5px solid #e3e8ee;"></div>
+            </div>
+
+            <div
+              id="examEventsContainer"
+              style="margin-top: 24px; display: none"
+            >
+              <div class="exam-section-label">Important Dates & Events</div>
+              <div
+                id="examEventsList"
+                style="
+                  max-height: 400px;
+                  overflow-y: auto;
+                  padding-right: 8px;
+                  margin-top: 16px;
+                "
+              ></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Toast -->
+    <div
+      id="examToast"
+      class="exam-toast"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      Selection saved
+    </div>
+
+    <!-- Holiday Modal -->
+    <div
+      id="holidayModal"
+      class="holiday-modal"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="holidayTitle"
+    >
+      <div class="holiday-modal-content" role="document">
+        <button
+          class="animated-close-btn"
+          id="closeModalBtn"
+          aria-label="Close holiday dialog"
+        >
+          ×
+        </button>
+        <h2 id="holidayTitle" class="modal-title">Holiday Information</h2>
+
+        <div class="upcoming-holidays-section" aria-live="polite">
+          <h3 style="font-weight: 600">Upcoming Holidays</h3>
+          <div id="upcomingHolidaysContainer">
+            <div class="loading">Loading holidays…</div>
+          </div>
+        </div>
+
+        <div class="check-holiday-section">
+          <h3 style="font-weight: 600">Check Holiday</h3>
+
+          <div
+            role="tablist"
+            aria-label="Holiday check modes"
+            style="
+              display: flex;
+              gap: 8px;
+              background: #f7f7f7;
+              padding: 6px;
+              border-radius: 24px;
+            "
+          >
+            <button
+              id="singleDateTab"
+              class="tab-btn active"
+              role="tab"
+              aria-selected="true"
+            >
+              Single Date
+            </button>
+            <button
+              id="dateRangeTab"
+              class="tab-btn"
+              role="tab"
+              aria-selected="false"
+            >
+              Date Range
+            </button>
+          </div>
+
+          <div
+            id="singleDateCheckForm"
+            class="date-check-form"
+            style="margin-top: 12px"
+          >
+            <label class="input-label">Select a Date</label>
+            <div
+              id="singleDateCalendar"
+              class="calendar-container"
+              aria-label="Single date calendar"
+            ></div>
+            <div class="calendar-legend" style="margin-top: 8px">
+              <span
+                ><strong
+                  style="
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    background: #fff0f5;
+                    border-radius: 50%;
+                    border: 1px solid #ff385c;
+                    margin-right: 8px;
+                    vertical-align: middle;
+                  "
+                ></strong>
+                Holiday</span
+              >
+              <span style="margin-left: 12px"
+                ><strong
+                  style="
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    border: 2px solid #222;
+                    margin-right: 8px;
+                    vertical-align: middle;
+                  "
+                ></strong>
+                Today</span
+              >
+            </div>
+            <div id="singleDateResult" aria-live="polite"></div>
+          </div>
+
+          <div
+            id="dateRangeCheckForm"
+            class="date-check-form"
+            style="display: none; margin-top: 12px"
+          >
+            <label class="input-label">Select Date Range</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px">
+              <div style="flex: 1; text-align: center">
+                <div style="font-size: 12px; color: #717171">Start Date</div>
+                <div id="startDateDisplay" style="font-weight: 600">
+                  Not selected
+                </div>
+              </div>
+              <div style="align-self: center; font-size: 18px; color: #717171">
+                →
+              </div>
+              <div style="flex: 1; text-align: center">
+                <div style="font-size: 12px; color: #717171">End Date</div>
+                <div id="endDateDisplay" style="font-weight: 600">
+                  Not selected
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="dateRangeCalendar"
+              class="calendar-container"
+              aria-label="Date range calendar"
+            ></div>
+            <div class="calendar-legend" style="margin-top: 8px">
+              <span
+                ><strong
+                  style="
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    background: #fff0f5;
+                    border-radius: 50%;
+                    border: 1px solid #ff385c;
+                    margin-right: 8px;
+                  "
+                ></strong>
+                Holiday</span
+              >
+              <span style="margin-left: 12px"
+                ><strong
+                  style="
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    background: #222;
+                    margin-right: 8px;
+                  "
+                ></strong>
+                Selected Range</span
+              >
+            </div>
+
+            <button
+              id="checkRangeBtn"
+              class="submit-btn"
+              style="margin-top: 12px"
+              disabled
+            >
+              Check Range
+            </button>
+            <div id="dateRangeResult" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <button
+          class="download-btn"
+          id="downloadPdfBtn"
+          style="margin-top: 14px"
+        >
+          See the Holiday List in PDF format
+        </button>
+      </div>
+    </div>
+
+    <!-- Announcements Modal -->
+    <div
+      id="announcementsModal"
+      class="holiday-modal"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="announcementsTitle"
+    >
+      <div
+        class="holiday-modal-content"
+        role="document"
+        style="max-width: 800px"
+      >
+        <button
+          class="animated-close-btn"
+          onclick="closeAnnouncementsModal()"
+          aria-label="Close announcements dialog"
+        >
+          ×
+        </button>
+        <h2
+          id="announcementsTitle"
+          class="modal-title"
+          style="display: flex; align-items: center; gap: 10px"
+        >
+          <span>📢</span> Latest Announcements & Notices
+        </h2>
+
+        <div
+          class="upcoming-holidays-section"
+          aria-live="polite"
+          style="margin-bottom: 0"
+        >
+          <div
+            id="announcementsContainer"
+            style="max-height: 500px; overflow-y: auto; padding-right: 8px"
+          >
+            <div class="loading">Loading announcements…</div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #717171;
+            font-size: 13px;
+          "
+        >
+          <p style="margin: 0">
+            Announcements are updated by the administration. Check back
+            regularly for updates.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+  </body>
+</html>
+
